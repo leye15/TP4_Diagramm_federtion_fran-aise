@@ -1,0 +1,83 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+abstract class Personne {
+  - nom : String
+  - prenom : String
+  - adresse : String
+  - dateNaissance : LocalDate
+  - groupeSanguin : String
+}
+
+class Plongeur {
+  - numeroPasseport : String
+  - niveau : int
+  + ajouterLicence(l : Licence) : void
+  + aLicenceValide(date : LocalDate) : boolean
+}
+
+class Moniteur {
+  - numeroMoniteur : String
+  - grade : String
+  - telephone : String
+  + nouvelEmploi(club : Club, dateDebut : LocalDate) : void
+  + employeurActuel() : Club
+  + emplois() : List<Embauche>
+  + terminerEmploi(dateFin : LocalDate) : void
+}
+
+class Club {
+  - numero : String
+  - nom : String
+  - adresse : String
+  - telephone : String
+  + setPresident(m : Moniteur) : void
+  + getPresident() : Moniteur
+  + plongeesNonConformes() : List<Plongee>
+}
+
+class Embauche {
+  - dateDebut : LocalDate
+  - dateFin : LocalDate
+  + terminer(dateFin : LocalDate) : void
+  + estEnCours() : boolean
+}
+
+class Licence {
+  - numero : String
+  - dateDelivrance : LocalDate
+  + estValide(date : LocalDate) : boolean
+}
+
+class Plongee {
+  - date : LocalDate
+  - heure : LocalTime
+  - site : String
+  - profondeur : int
+  - duree : int
+  + ajouterParticipant(p : Plongeur) : void
+  + estConforme() : boolean
+  + setClubOrganisateur(c : Club) : void
+  + getClubOrganisateur() : Club
+}
+
+' Héritage
+Personne <|-- Plongeur
+Personne <|-- Moniteur
+
+' Associations Club / Moniteur
+Club "0..*" --> "1" Moniteur : est présidé par >
+Moniteur "1" -- "0..*" Embauche : occupe >
+Club "1" -- "0..*" Embauche : emploie >
+
+' Associations Licence
+Plongeur "1" -- "0..*" Licence : possède >
+Club "1" -- "0..*" Licence : délivre >
+
+' Associations Plongée (Palanquée)
+Club "1" -- "0..*" Plongee : organise >
+Moniteur "1" -- "0..*" Plongee : dirige (chef de palanquée) >
+Plongeur "1..*" -- "0..*" Plongee : participe >
+
+@enduml
